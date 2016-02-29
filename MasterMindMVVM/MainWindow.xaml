@@ -1,0 +1,212 @@
+﻿<Window x:Class="MasterMindMVVM.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MasterMindMVVM"
+        xmlns:converter="clr-namespace:MasterMindUI;assembly=MasterMindUI"
+        mc:Ignorable="d"
+        Title="Mastermind"
+        MinHeight="680"
+        MinWidth="500"
+        SizeToContent="Height"
+        Width="500"
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converter:BooleanToInvisibilityConverter x:Key="BooleanToInvisibilityConverter" />
+        <converter:IntToColorConveter x:Key="IntToColorConveter" />
+        <converter:IntToColor2Converter x:Key="IntToColor2Converter" />
+        <DataTemplate x:Key="CbxTemplate">
+            <Rectangle Fill="{Binding Path=., Converter={StaticResource IntToColorConveter }}"
+                       Height="30"
+                       Width="50"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center" />
+        </DataTemplate>
+        <Style x:Key="ComboBoxStyle"
+               TargetType="ComboBox">
+            <Setter Property="Margin"
+                    Value="10 0" />
+            <Setter Property="HorizontalAlignment"
+                    Value="Center" />
+            <Setter Property="VerticalAlignment"
+                    Value="Center" />
+            <Setter Property="Width"
+                    Value="60" />
+            <Setter Property="Height"
+                    Value="30" />
+            <Setter Property="Background"
+                    Value="Transparent"/>
+            <Setter Property="ItemTemplate"
+                    Value="{StaticResource CbxTemplate}" />
+            <Setter Property="IsEnabled"
+                    Value="{Binding Path=IsButtonEnabled}" />
+            <Setter Property="ItemsSource"
+                    Value="{Binding Path=ComboboxAuswahl}" />
+        </Style>
+        <Style x:Key="HintStyle"
+               TargetType="Rectangle">
+            <Setter Property="Visibility"
+                    Value="Visible" />
+            <Setter Property="HorizontalAlignment"
+                    Value="Center" />
+            <Setter Property="VerticalAlignment"
+                    Value="Center" />
+            <Setter Property="Width"
+                    Value="24" />
+            <Setter Property="Height"
+                    Value="10" />
+        </Style>
+    </Window.Resources>
+    <Grid HorizontalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="120" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="40" />
+            <ColumnDefinition Width="400" />
+            <ColumnDefinition Width="40" />
+        </Grid.ColumnDefinitions>
+        <Label x:Name="Head"
+               Content="MASTERMIND"
+               FontSize="40"
+               Margin="0,40,0,0"
+               Grid.Row="0"
+               Grid.Column="1"
+               Height="63"
+               VerticalAlignment="Top"
+               HorizontalAlignment="Center"
+               Width="263" />
+        <Grid Name="GameInterface"
+              Grid.Row="1"
+              Grid.Column="1"
+              Width="400">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="400" />
+                <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="400" />
+            </Grid.ColumnDefinitions>
+            <ItemsControl ItemsSource="{Binding Path=MasterMindRows}"
+                          Name="ListView"
+                          Background="#FF253536">
+
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Rows="10"
+                                     Columns="1" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type converter:MasterMindRowViewModel}"
+                                  x:Name="RowTemplate">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="40" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <ComboBox x:Name="comboBox0"
+                                      Grid.Column="0"
+                                      SelectedItem="{Binding InputValue0}"
+                                      Style="{StaticResource ComboBoxStyle}" />
+                            <ComboBox x:Name="comboBox1"
+                                      Grid.Column="1"
+                                      SelectedItem="{Binding InputValue1}"
+                                      Style="{StaticResource ComboBoxStyle}" />
+                            <ComboBox x:Name="comboBox2"
+                                      Grid.Column="2"
+                                      SelectedItem="{Binding InputValue2}"
+                                      Style="{StaticResource ComboBoxStyle}" />
+                            <ComboBox x:Name="comboBox3"
+                                      Grid.Column="3"
+                                      SelectedItem="{Binding InputValue3}"
+                                      Style="{StaticResource ComboBoxStyle}" />
+                            <Button Name="Set"
+                                    Content="Set"
+                                    FontSize="20"
+                                    FontStretch="Expanded"
+                                    FontWeight="DemiBold"
+                                    Height="30"
+                                    Width="60"
+                                    Margin="10 0"
+                                    VerticalContentAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Center"
+                                    Background="DimGray"
+                                    CommandParameter="{Binding}"
+                                    Grid.Column="4"
+                                    Visibility="{Binding Path=RowFinished, Converter={StaticResource BooleanToInvisibilityConverter},UpdateSourceTrigger=PropertyChanged}"
+                                    Foreground="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}"
+                                    Command="{Binding Path=DataContext.SetCommand, ElementName=ListView}" />
+                            <Grid Name="Hints"
+                                  Grid.Column="4"
+                                  Visibility="{Binding Path=RowFinished, Converter={StaticResource BooleanToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
+                                  Height="30"
+                                  Width="60"
+                                  Margin="10 0"
+                                  Background="DimGray"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Rectangle x:Name="treffer0"
+                                           Grid.Row="0"
+                                           Grid.Column="0"
+                                           Style="{StaticResource HintStyle}"
+                                           Fill="{Binding Path=Treffer0, Converter={StaticResource IntToColor2Converter}}" />
+                                <Rectangle x:Name="treffer1"
+                                           Grid.Row="0"
+                                           Grid.Column="1"
+                                           Style="{StaticResource HintStyle}"
+                                           Fill="{Binding Path=Treffer1, Converter={StaticResource IntToColor2Converter}}" />
+                                <Rectangle x:Name="treffer2"
+                                           Grid.Row="1"
+                                           Grid.Column="0"
+                                           Style="{StaticResource HintStyle}"
+                                           Fill="{Binding Path=Treffer2, Converter={StaticResource IntToColor2Converter}}" />
+                                <Rectangle x:Name="treffer3"
+                                           Grid.Row="1"
+                                           Grid.Column="1"
+                                           Style="{StaticResource HintStyle}"
+                                           Fill="{Binding Path=Treffer3, Converter={StaticResource IntToColor2Converter}}" />
+                            </Grid>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Label Grid.Row="1"
+                   Grid.Column="0"
+                   Background="#FF253536" />
+            <Label Grid.Row="2"
+                   Grid.Column="0"
+                   Width="auto"
+                   Height="auto"
+                   Content="{Binding Path=Win}"
+                   VerticalContentAlignment="Center"
+                   HorizontalContentAlignment="Center"
+                   FontSize="30"
+                   Background="#FF253536"
+                   ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                   Padding="0" />
+        </Grid>
+    </Grid>
+</Window>
+
+<!---->
